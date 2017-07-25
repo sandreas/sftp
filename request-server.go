@@ -10,6 +10,8 @@ import (
 	"syscall"
 
 	"github.com/pkg/errors"
+
+	"log"
 )
 
 var maxTxPacket uint32 = 1 << 15
@@ -124,17 +126,22 @@ func (rs *RequestServer) packetWorker(pktChan chan requestPacket) error {
 		var rpkt responsePacket
 		switch pkt := pkt.(type) {
 		case *sshFxInitPacket:
+			log.Printf("request-server.go->packetWorker: pkt.(type) sshFxInitPacket")
 			rpkt = sshFxVersionPacket{sftpProtocolVersion, nil}
 		case *sshFxpClosePacket:
+			log.Printf("request-server.go->packetWorker: pkt.(type) sshFxpClosePacket")
 			handle := pkt.getHandle()
 			rs.closeRequest(handle)
 			rpkt = statusFromError(pkt, nil)
 		case *sshFxpRealpathPacket:
+			log.Printf("request-server.go->packetWorker: pkt.(type) sshFxpRealpathPacket")
 			rpkt = cleanPath(pkt)
 		case isOpener:
+			log.Printf("request-server.go->packetWorker: pkt.(type) isOpener")
 			handle := rs.nextRequest(requestFromPacket(pkt))
 			rpkt = sshFxpHandlePacket{pkt.id(), handle}
 		case *sshFxpFstatPacket:
+			log.Printf("request-server.go->packetWorker: pkt.(type) sshFxpFstatPacket")
 			handle := pkt.getHandle()
 			request, ok := rs.getRequest(handle)
 			if !ok {
@@ -145,6 +152,7 @@ func (rs *RequestServer) packetWorker(pktChan chan requestPacket) error {
 				rpkt = rs.handle(request, pkt)
 			}
 		case *sshFxpFsetstatPacket:
+			log.Printf("request-server.go->packetWorker: pkt.(type) sshFxpFsetstatPacket")
 			handle := pkt.getHandle()
 			request, ok := rs.getRequest(handle)
 			if !ok {
@@ -160,17 +168,25 @@ func (rs *RequestServer) packetWorker(pktChan chan requestPacket) error {
 			handle := pkt.getHandle()
 			request, ok := rs.getRequest(handle)
 			request.update(pkt)
+			log.Printf("request-server.go->packetWorker: Type hasHandle (handle %+v)", handle)
+			log.Printf("  => request after update: %+v", request)
 			if !ok {
 				rpkt = statusFromError(pkt, syscall.EBADF)
 			} else {
 				rpkt = rs.handle(request, pkt)
 			}
+			log.Printf("  => pkt: %+v. rpkt: %+v",pkt, rpkt)
+
 		case hasPath:
+			log.Printf("request-server.go->packetWorker: pkt.(type) hasPath")
 			request := requestFromPacket(pkt)
 			rpkt = rs.handle(request, pkt)
 		default:
 			return errors.Errorf("unexpected packet type %T", pkt)
 		}
+
+		log.Printf("request-server.go->packetWorker: sendPacket %+v", rpkt)
+
 
 		err := rs.sendPacket(rpkt)
 		if err != nil {
@@ -186,7 +202,8 @@ func cleanPath(pkt *sshFxpRealpathPacket) responsePacket {
 		path = "/" + path
 	} // all paths are absolute
 
-	cleaned_path := filepath.Clean(path)
+	cleaned_path := filepath.ToSlash(filepath.Clean(path))
+
 	return &sshFxpNamePacket{
 		ID: pkt.id(),
 		NameAttrs: []sshFxpNameAttr{{

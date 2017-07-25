@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/pkg/errors"
+	"log"
 )
 
 // Request contains the data and state for the incoming service request.
@@ -52,16 +53,18 @@ func requestFromPacket(pkt hasPath) Request {
 		request.Flags = p.Flags
 		request.Attrs = p.Attrs.([]byte)
 	case *sshFxpRenamePacket:
-		request.Target = filepath.Clean(p.Newpath)
+		request.Target = filepath.ToSlash(filepath.Clean(p.Newpath))
 	case *sshFxpSymlinkPacket:
-		request.Target = filepath.Clean(p.Linkpath)
+		request.Target = filepath.ToSlash(filepath.Clean(p.Linkpath))
 	}
 	return request
 }
 
 // NewRequest creates a new Request object.
 func NewRequest(method, path string) Request {
-	request := Request{Method: method, Filepath: filepath.Clean(path)}
+	// XXX
+	log.Printf("=== request.go->NewRequest: Method %s for path %s", method, path)
+	request := Request{Method: method, Filepath: filepath.ToSlash(filepath.Clean(path))}
 	request.packets = make(chan packet_data, sftpServerWorkerCount)
 	request.state = &state{}
 	request.stateLock = &sync.RWMutex{}
@@ -149,6 +152,8 @@ func (r *Request) popPacket() packet_data {
 func (r Request) handle(handlers Handlers) (responsePacket, error) {
 	var err error
 	var rpkt responsePacket
+	log.Printf("request.go->handle - r.Method: %s, r: %+v", r.Method, r)
+
 	switch r.Method {
 	case "Get":
 		rpkt, err = fileget(handlers.FileGet, r)
@@ -158,6 +163,9 @@ func (r Request) handle(handlers Handlers) (responsePacket, error) {
 		rpkt, err = filecmd(handlers.FileCmd, r)
 	case "List", "Stat", "Readlink":
 		rpkt, err = fileinfo(handlers.FileInfo, r)
+		log.Printf("request.go->handle:  r=%+v", r)
+		log.Printf("  => rpkt: %+v", rpkt)
+		log.Printf("  => err: %+v", err)
 	default:
 		return rpkt, errors.Errorf("unexpected method: %s", r.Method)
 	}
@@ -235,18 +243,25 @@ func fileinfo(h FileInfoer, r Request) (responsePacket, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	log.Printf("request.go->fileinfo - Method %s", r.Method)
 	switch r.Method {
 	case "List":
 		pd := r.popPacket()
-		dirname := path.Base(r.Filepath)
+		dirname := filepath.ToSlash(path.Base(r.Filepath))
 		ret := &sshFxpNamePacket{ID: pd.id}
 		for _, fi := range finfo {
-			ret.NameAttrs = append(ret.NameAttrs, sshFxpNameAttr{
+			log.Printf("  => fi: %+v", fi)
+			debugFxpNameAttr := sshFxpNameAttr{
 				Name:     fi.Name(),
 				LongName: runLs(dirname, fi),
 				Attrs:    []interface{}{fi},
-			})
+			}
+			ret.NameAttrs = append(ret.NameAttrs, debugFxpNameAttr)
+		}
+
+		log.Printf("  => Attrs-items: ")
+		for key, value := range ret.NameAttrs {
+			log.Printf("    => item %v: %+v: ", key, value)
 		}
 		// No entries means we should return EOF as the Handler didn't.
 		if len(finfo) == 0 {
