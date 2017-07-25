@@ -4,6 +4,7 @@ import (
 	"encoding"
 
 	"github.com/pkg/errors"
+	"path/filepath"
 )
 
 // all incoming packets
@@ -41,30 +42,30 @@ type notReadOnly interface {
 
 //// define types by adding methods
 // hasPath
-func (p sshFxpLstatPacket) getPath() string    { return p.Path }
-func (p sshFxpStatPacket) getPath() string     { return p.Path }
-func (p sshFxpRmdirPacket) getPath() string    { return p.Path }
-func (p sshFxpReadlinkPacket) getPath() string { return p.Path }
-func (p sshFxpRealpathPacket) getPath() string { return p.Path }
-func (p sshFxpMkdirPacket) getPath() string    { return p.Path }
-func (p sshFxpSetstatPacket) getPath() string  { return p.Path }
-func (p sshFxpStatvfsPacket) getPath() string  { return p.Path }
-func (p sshFxpRemovePacket) getPath() string   { return p.Filename }
-func (p sshFxpRenamePacket) getPath() string   { return p.Oldpath }
-func (p sshFxpSymlinkPacket) getPath() string  { return p.Targetpath }
+func (p sshFxpLstatPacket) getPath() string    { return filepath.ToSlash(p.Path) }
+func (p sshFxpStatPacket) getPath() string     { return filepath.ToSlash(p.Path) }
+func (p sshFxpRmdirPacket) getPath() string    { return filepath.ToSlash(p.Path) }
+func (p sshFxpReadlinkPacket) getPath() string { return filepath.ToSlash(p.Path) }
+func (p sshFxpRealpathPacket) getPath() string { return filepath.ToSlash(p.Path) }
+func (p sshFxpMkdirPacket) getPath() string    { return filepath.ToSlash(p.Path) }
+func (p sshFxpSetstatPacket) getPath() string  { return filepath.ToSlash(p.Path) }
+func (p sshFxpStatvfsPacket) getPath() string  { return filepath.ToSlash(p.Path) }
+func (p sshFxpRemovePacket) getPath() string   { return filepath.ToSlash(p.Filename) }
+func (p sshFxpRenamePacket) getPath() string   { return filepath.ToSlash(p.Oldpath) }
+func (p sshFxpSymlinkPacket) getPath() string  { return filepath.ToSlash(p.Targetpath) }
 
 // Openers implement hasPath and isOpener
-func (p sshFxpOpendirPacket) getPath() string { return p.Path }
+func (p sshFxpOpendirPacket) getPath() string { return filepath.ToSlash(p.Path) }
 func (p sshFxpOpendirPacket) isOpener()       {}
-func (p sshFxpOpenPacket) getPath() string    { return p.Path }
+func (p sshFxpOpenPacket) getPath() string    { return filepath.ToSlash(p.Path) }
 func (p sshFxpOpenPacket) isOpener()          {}
 
 // hasHandle
-func (p sshFxpFstatPacket) getHandle() string    { return p.Handle }
-func (p sshFxpFsetstatPacket) getHandle() string { return p.Handle }
-func (p sshFxpReadPacket) getHandle() string     { return p.Handle }
-func (p sshFxpWritePacket) getHandle() string    { return p.Handle }
-func (p sshFxpReaddirPacket) getHandle() string  { return p.Handle }
+func (p sshFxpFstatPacket) getHandle() string    { return filepath.ToSlash(p.Handle) }
+func (p sshFxpFsetstatPacket) getHandle() string { return filepath.ToSlash(p.Handle) }
+func (p sshFxpReadPacket) getHandle() string     { return filepath.ToSlash(p.Handle) }
+func (p sshFxpWritePacket) getHandle() string    { return filepath.ToSlash(p.Handle) }
+func (p sshFxpReaddirPacket) getHandle() string  { return filepath.ToSlash(p.Handle) }
 
 // notReadOnly
 func (p sshFxpWritePacket) notReadOnly()    {}

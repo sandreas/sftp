@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"log"
 )
 
 const (
@@ -154,6 +155,7 @@ func (svr *Server) sftpServerWorker(pktChan chan requestPacket) error {
 }
 
 func handlePacket(s *Server, p interface{}) error {
+	log.Printf("server.go->handlePacket: p=%+v", p)
 	switch p := p.(type) {
 	case *sshFxInitPacket:
 		return s.sendPacket(sshFxVersionPacket{sftpProtocolVersion, nil})
