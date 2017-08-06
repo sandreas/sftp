@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sort"
-	"github.com/sandreas/graft/file"
 	"io"
 	"log"
 	"strconv"
@@ -23,7 +22,7 @@ func VfsHandler(matchingPaths []string) Handlers {
 
 
 	virtualFileSystem.files = matchingPaths
-	virtualFileSystem.pathMap = file.MakePathMap(matchingPaths)
+	virtualFileSystem.pathMap = MakePathMap(matchingPaths)
 
 
 	return Handlers{
@@ -159,4 +158,52 @@ func fetch(fs *vfs, requestedPath string) string {
 		}
 	}
 	return foundFile
+}
+
+
+func MakePathMap(matchingPaths []string) map[string][]string {
+	pathMap := make(map[string][]string)
+
+	sort.Strings(matchingPaths)
+
+	//if val, ok := dict["foo"]; ok {
+	//	//do something here
+	//}
+
+	for _, path := range matchingPaths {
+		key, parentPath := normalizePathMapItem(path)
+
+		for  {
+			// println("append: ", key, " => ", path)
+			pathMap[key] = append(pathMap[key], path)
+			path = parentPath
+			//println("before => key:", key, "parentPath:", parentPath)
+			key, parentPath = normalizePathMapItem(parentPath)
+			//println("after  => key:", key, "parentPath:", parentPath)
+			_, ok := pathMap[key]
+
+			//println("is present?", key, ok)
+			if ok {
+				break
+			}
+		}
+	}
+
+
+
+	return pathMap
+}
+
+func normalizePathMapItem(path string) (string, string) {
+	parentPath := filepath.ToSlash(filepath.Dir(path))
+	key := parentPath
+	if parentPath == "." {
+		key = "/"
+	}
+
+	firstChar := string([]rune(key)[0])
+	if firstChar != "/" {
+		key = "/" + key
+	}
+	return key, parentPath
 }

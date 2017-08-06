@@ -1,0 +1,58 @@
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) sshFxInitPacket
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket {Version:3 Extensions:[]}
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) sshFxpRealpathPacket
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket &{ID:256 NameAttrs:[{Name:/ LongName:/ Attrs:[0]}]}
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) sshFxpRealpathPacket
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket &{ID:256 NameAttrs:[{Name:/ LongName:/ Attrs:[0]}]}
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) isOpener
+2017/08/06 23:28:45 === request.go->NewRequest: Method Open for path /
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket {ID:256 Handle:1}
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) sshFxpClosePacket
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket {ID:256 StatusError:{Code:0 msg: lang:}}
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) sshFxpRealpathPacket
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket &{ID:256 NameAttrs:[{Name:/ LongName:/ Attrs:[0]}]}
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) isOpener
+2017/08/06 23:28:45 === request.go->NewRequest: Method Open for path /
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket {ID:256 Handle:2}
+2017/08/06 23:28:45 request-server.go->packetWorker: Type hasHandle (handle 2)
+2017/08/06 23:28:45   => request after update: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45 request.go->handle - r.Method: List, r: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45 vfshandler.go->FileInfo: r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45   List => stat.Name()=LICENSE, stat.IsDir()=false
+2017/08/06 23:28:45   List => stat.Name()=examples, stat.IsDir()=true
+2017/08/06 23:28:45 request.go->fileinfo - Method List
+2017/08/06 23:28:45   => fi: &{name:LICENSE sys:{FileAttributes:32 CreationTime:{LowDateTime:599950200 HighDateTime:30606641} LastAccessTime:{LowDateTime:599950200 HighDateTime:30606641} LastWriteTime:{LowDateTime:599960241 HighDateTime:30606641} FileSizeHigh:0 FileSizeLow:1289} pipe:false Mutex:{state:0 sema:0} path:C:\Users\mediacenter\go\src\github.com\sandreas\sftp\LICENSE vol:0 idxhi:0 idxlo:0}
+2017/08/06 23:28:45   => fi: &{name:examples sys:{FileAttributes:16 CreationTime:{LowDateTime:600060206 HighDateTime:30606641} LastAccessTime:{LowDateTime:1533014309 HighDateTime:30606642} LastWriteTime:{LowDateTime:1533014309 HighDateTime:30606642} FileSizeHigh:0 FileSizeLow:4096} pipe:false Mutex:{state:0 sema:0} path:C:\Users\mediacenter\go\src\github.com\sandreas\sftp\examples vol:0 idxhi:0 idxlo:0}
+2017/08/06 23:28:45   => Attrs-items:
+2017/08/06 23:28:45     => item 0: {Name:LICENSE LongName:/LICENSE Attrs:[0xc0421240c0]}:
+2017/08/06 23:28:45     => item 1: {Name:examples LongName:/examples Attrs:[0xc042124120]}:
+2017/08/06 23:28:45 request.go->handle:  r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45   => rpkt: &{ID:256 NameAttrs:[{Name:LICENSE LongName:/LICENSE Attrs:[0xc0421240c0]} {Name:examples LongName:/examples Attrs:[0xc042124120]}]}
+2017/08/06 23:28:45   => err: <nil>
+2017/08/06 23:28:45   => pkt: &{ID:256 Handle:2}. rpkt: &{ID:256 NameAttrs:[{Name:LICENSE LongName:/LICENSE Attrs:[0xc0421240c0]} {Name:examples LongName:/examples Attrs:[0xc042124120]}]}
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket &{ID:256 NameAttrs:[{Name:LICENSE LongName:/LICENSE Attrs:[0xc0421240c0]} {Name:examples LongName:/examples Attrs:[0xc042124120]}]}
+2017/08/06 23:28:45       attrs.go->fromFileMode: dir: false ret: 33206
+2017/08/06 23:28:45       attrs.go->fileStatFromInfo: {Size:1289 Mode:33206 Mtime:1500978673 Atime:1500978673 UID:0 GID:0 Extended:[]}
+2017/08/06 23:28:45     attrs.go->marshalFileInfo: size: 1289
+2017/08/06 23:28:45     attrs.go->marshalFileInfo: atime: 1500978673, mtime: 1500978673
+2017/08/06 23:28:45     attrs.go->marshalFileInfo: b: [0 0 0 7 76 73 67 69 78 83 69 0 0 0 8 47 76 73 67 69 78 83 69 0 0 0 13 0 0 0 0 0 0 5 9 0 0 129 182 89 119 29 241 89 119 29 241]
+2017/08/06 23:28:45       attrs.go->fromFileMode: dir: true ret: 16895
+2017/08/06 23:28:45       attrs.go->fileStatFromInfo: {Size:4096 Mode:16895 Mtime:1500979196 Atime:1500979196 UID:0 GID:0 Extended:[]}
+2017/08/06 23:28:45     attrs.go->marshalFileInfo: size: 4096
+2017/08/06 23:28:45     attrs.go->marshalFileInfo: atime: 1500979196, mtime: 1500979196
+2017/08/06 23:28:45     attrs.go->marshalFileInfo: b: [0 0 0 8 101 120 97 109 112 108 101 115 0 0 0 9 47 101 120 97 109 112 108 101 115 0 0 0 13 0 0 0 0 0 0 16 0 0 0 65 255 89 119 31 252 89 119 31 252]
+2017/08/06 23:28:45 request-server.go->packetWorker: Type hasHandle (handle 2)
+2017/08/06 23:28:45   => request after update: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45 request.go->handle - r.Method: List, r: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45 vfshandler.go->FileInfo: r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45   List => stat.Name()=LICENSE, stat.IsDir()=false
+2017/08/06 23:28:45   List => stat.Name()=examples, stat.IsDir()=true
+2017/08/06 23:28:45 request.go->fileinfo - Method List
+2017/08/06 23:28:45   => Attrs-items:
+2017/08/06 23:28:45 request.go->handle:  r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc042124060 stateLock:0xc04211c140 state:0xc0420a8380}
+2017/08/06 23:28:45   => rpkt: <nil>
+2017/08/06 23:28:45   => err: EOF
+2017/08/06 23:28:45   => pkt: &{ID:256 Handle:2}. rpkt: {ID:256 StatusError:{Code:1 msg:EOF lang:}}
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket {ID:256 StatusError:{Code:1 msg:EOF lang:}}
+2017/08/06 23:28:45 request-server.go->packetWorker: pkt.(type) sshFxpClosePacket
+2017/08/06 23:28:45 request-server.go->packetWorker: sendPacket {ID:256 StatusError:{Code:0 msg: lang:}}

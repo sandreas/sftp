@@ -7,6 +7,7 @@ import (
 	"os"
 	"syscall"
 	"time"
+	"log"
 )
 
 const (
@@ -62,6 +63,8 @@ type StatExtended struct {
 }
 
 func fileInfoFromStat(st *FileStat, name string) os.FileInfo {
+	log.Printf("attrs.go->fileInfoFromStat: ")
+
 	fs := &fileInfo{
 		name:  name,
 		size:  int64(st.Size),
@@ -73,6 +76,7 @@ func fileInfoFromStat(st *FileStat, name string) os.FileInfo {
 }
 
 func fileStatFromInfo(fi os.FileInfo) (uint32, FileStat) {
+
 	mtime := fi.ModTime().Unix()
 	atime := mtime
 	var flags uint32 = ssh_FILEXFER_ATTR_SIZE |
@@ -86,13 +90,20 @@ func fileStatFromInfo(fi os.FileInfo) (uint32, FileStat) {
 		Atime: uint32(atime),
 	}
 
+	log.Printf("      attrs.go->fileStatFromInfo: %+v", fileStat)
+
+
 	// os specific file stat decoding
+	// XXX: HIER!!
 	fileStatFromInfoOs(fi, &flags, &fileStat)
+
 
 	return flags, fileStat
 }
 
 func unmarshalAttrs(b []byte) (*FileStat, []byte) {
+	log.Printf("attrs.go->unmarshalAttrs: ")
+
 	flags, b := unmarshalUint32(b)
 	var fs FileStat
 	if flags&ssh_FILEXFER_ATTR_SIZE == ssh_FILEXFER_ATTR_SIZE {
@@ -128,6 +139,7 @@ func unmarshalAttrs(b []byte) (*FileStat, []byte) {
 }
 
 func marshalFileInfo(b []byte, fi os.FileInfo) []byte {
+
 	// attributes variable struct, and also variable per protocol version
 	// spec version 3 attributes:
 	// uint32   flags
@@ -147,6 +159,8 @@ func marshalFileInfo(b []byte, fi os.FileInfo) []byte {
 
 	b = marshalUint32(b, flags)
 	if flags&ssh_FILEXFER_ATTR_SIZE != 0 {
+		log.Printf("    attrs.go->marshalFileInfo: size: %+v",  fileStat.Size)
+
 		b = marshalUint64(b, fileStat.Size)
 	}
 	if flags&ssh_FILEXFER_ATTR_UIDGID != 0 {
@@ -159,13 +173,19 @@ func marshalFileInfo(b []byte, fi os.FileInfo) []byte {
 	if flags&ssh_FILEXFER_ATTR_ACMODTIME != 0 {
 		b = marshalUint32(b, fileStat.Atime)
 		b = marshalUint32(b, fileStat.Mtime)
+
+		log.Printf("    attrs.go->marshalFileInfo: atime: %+v, mtime: %+v",  fileStat.Atime, fileStat.Mtime)
+
 	}
+	log.Printf("    attrs.go->marshalFileInfo: b: %+v", b)
 
 	return b
 }
 
 // toFileMode converts sftp filemode bits to the os.FileMode specification
 func toFileMode(mode uint32) os.FileMode {
+	log.Printf("attrs.go->toFileMode: ")
+
 	var fm = os.FileMode(mode & 0777)
 	switch mode & syscall.S_IFMT {
 	case syscall.S_IFBLK:
@@ -197,8 +217,9 @@ func toFileMode(mode uint32) os.FileMode {
 
 // fromFileMode converts from the os.FileMode specification to sftp filemode bits
 func fromFileMode(mode os.FileMode) uint32 {
-	ret := uint32(0)
 
+	ret := uint32(0)
+	isDir := false
 	if mode&os.ModeDevice != 0 {
 		if mode&os.ModeCharDevice != 0 {
 			ret |= syscall.S_IFCHR
@@ -208,6 +229,7 @@ func fromFileMode(mode os.FileMode) uint32 {
 	}
 	if mode&os.ModeDir != 0 {
 		ret |= syscall.S_IFDIR
+		isDir = true
 	}
 	if mode&os.ModeSymlink != 0 {
 		ret |= syscall.S_IFLNK
@@ -232,6 +254,9 @@ func fromFileMode(mode os.FileMode) uint32 {
 		ret |= syscall.S_IFREG
 	}
 	ret |= uint32(mode & os.ModePerm)
+
+
+	log.Printf("      attrs.go->fromFileMode: dir: %v ret: %+v", isDir, ret)
 
 	return ret
 }
