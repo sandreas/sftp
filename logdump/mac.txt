@@ -1,0 +1,51 @@
+request-server.go->packetWorker: pkt.(type) sshFxInitPacket
+request-server.go->packetWorker: sendPacket {Version:3 Extensions:[]}
+request-server.go->packetWorker: pkt.(type) sshFxpRealpathPacket
+request-server.go->packetWorker: sendPacket &{ID:256 NameAttrs:[{Name:/ LongName:/ Attrs:[0]}]}
+request-server.go->packetWorker: pkt.(type) sshFxpRealpathPacket
+request-server.go->packetWorker: sendPacket &{ID:256 NameAttrs:[{Name:/ LongName:/ Attrs:[0]}]}
+request-server.go->packetWorker: pkt.(type) isOpener
+=== request.go->NewRequest: Method Open for path /
+request-server.go->packetWorker: sendPacket {ID:256 Handle:1}
+request-server.go->packetWorker: Type hasHandle (handle 1)
+  => request after update: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+request.go->handle - r.Method: List, r: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+vfshandler.go->FileInfo: r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+  List => stat.Name()=LICENSE, stat.IsDir()=false
+  List => stat.Name()=examples, stat.IsDir()=true
+request.go->fileinfo - Method List
+  => fi: &{name:LICENSE size:1289 mode:420 modTime:{sec:63637651944 nsec:0 loc:0x1312560} sys:{Dev:16777220 Mode:33188 Nlink:1 Ino:14642466 Uid:501 Gid:20 Rdev:0 Pad_cgo_0:[0 0 0 0] Atimespec:{Sec:1502055145 Nsec:0} Mtimespec:{Sec:1502055144 Nsec:0} Ctimespec:{Sec:1502055144 Nsec:0} Birthtimespec:{Sec:1502055144 Nsec:0} Size:1289 Blocks:8 Blksize:4096 Flags:0 Gen:0 Lspare:0 Qspare:[0 0]}}
+  => fi: &{name:examples size:306 mode:2147484141 modTime:{sec:63637652023 nsec:0 loc:0x1312560} sys:{Dev:16777220 Mode:16877 Nlink:9 Ino:14642480 Uid:501 Gid:20 Rdev:0 Pad_cgo_0:[0 0 0 0] Atimespec:{Sec:1502055237 Nsec:0} Mtimespec:{Sec:1502055223 Nsec:0} Ctimespec:{Sec:1502055223 Nsec:0} Birthtimespec:{Sec:1502055144 Nsec:0} Size:306 Blocks:0 Blksize:4096 Flags:0 Gen:0 Lspare:0 Qspare:[0 0]}}
+  => Attrs-items:
+    => item 0: {Name:LICENSE LongName:-rw-r--r--    1 501      20           1289 Aug  6 23:32 LICENSE Attrs:[0xc4200d40d0]}:
+    => item 1: {Name:examples LongName:drwxr-xr-x    9 501      20            306 Aug  6 23:33 examples Attrs:[0xc4200d41a0]}:
+request.go->handle:  r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+  => rpkt: &{ID:256 NameAttrs:[{Name:LICENSE LongName:-rw-r--r--    1 501      20           1289 Aug  6 23:32 LICENSE Attrs:[0xc4200d40d0]} {Name:examples LongName:drwxr-xr-x    9 501      20            306 Aug  6 23:33 examples Attrs:[0xc4200d41a0]}]}
+  => err: <nil>
+  => pkt: &{ID:256 Handle:1}. rpkt: &{ID:256 NameAttrs:[{Name:LICENSE LongName:-rw-r--r--    1 501      20           1289 Aug  6 23:32 LICENSE Attrs:[0xc4200d40d0]} {Name:examples LongName:drwxr-xr-x    9 501      20            306 Aug  6 23:33 examples Attrs:[0xc4200d41a0]}]}
+request-server.go->packetWorker: sendPacket &{ID:256 NameAttrs:[{Name:LICENSE LongName:-rw-r--r--    1 501      20           1289 Aug  6 23:32 LICENSE Attrs:[0xc4200d40d0]} {Name:examples LongName:drwxr-xr-x    9 501      20            306 Aug  6 23:33 examples Attrs:[0xc4200d41a0]}]}
+      attrs.go->fromFileMode: dir: false ret: 33188
+      attrs.go->fileStatFromInfo: {Size:1289 Mode:33188 Mtime:1502055144 Atime:1502055144 UID:0 GID:0 Extended:[]}
+    attrs.go->marshalFileInfo: size: 1289
+    attrs.go->marshalFileInfo: atime: 1502055144, mtime: 1502055144
+    attrs.go->marshalFileInfo: b: [0 0 0 7 76 73 67 69 78 83 69 0 0 0 63 45 114 119 45 114 45 45 114 45 45 32 32 32 32 49 32 53 48 49 32 32 32 32 32 32 50 48 32 32 32 32 32 32 32 32 32 32 32 49 50 56 57 32 65 117 103 32 32 54 32 50 51 58 51 50 32 76 73 67 69 78 83 69 0 0 0 15 0 0 0 0 0 0 5 9 0 0 1 245 0 0 0 20 0 0 129 164 89 135 138 232 89 135 138 232]
+      attrs.go->fromFileMode: dir: true ret: 16877
+      attrs.go->fileStatFromInfo: {Size:306 Mode:16877 Mtime:1502055223 Atime:1502055223 UID:0 GID:0 Extended:[]}
+    attrs.go->marshalFileInfo: size: 306
+    attrs.go->marshalFileInfo: atime: 1502055223, mtime: 1502055223
+    attrs.go->marshalFileInfo: b: [0 0 0 8 101 120 97 109 112 108 101 115 0 0 0 64 100 114 119 120 114 45 120 114 45 120 32 32 32 32 57 32 53 48 49 32 32 32 32 32 32 50 48 32 32 32 32 32 32 32 32 32 32 32 32 51 48 54 32 65 117 103 32 32 54 32 50 51 58 51 51 32 101 120 97 109 112 108 101 115 0 0 0 15 0 0 0 0 0 0 1 50 0 0 1 245 0 0 0 20 0 0 65 237 89 135 139 55 89 135 139 55]
+request-server.go->packetWorker: Type hasHandle (handle 1)
+  => request after update: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+request.go->handle - r.Method: List, r: {Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+vfshandler.go->FileInfo: r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+  List => stat.Name()=LICENSE, stat.IsDir()=false
+  List => stat.Name()=examples, stat.IsDir()=true
+request.go->fileinfo - Method List
+  => Attrs-items:
+request.go->handle:  r={Method:List Filepath:/ Flags:0 Attrs:[] Target: pkt_id:256 packets:0xc4200c8480 stateLock:0xc4200bc4e0 state:0xc4200be880}
+  => rpkt: <nil>
+  => err: EOF
+  => pkt: &{ID:256 Handle:1}. rpkt: {ID:256 StatusError:{Code:1 msg:EOF lang:}}
+request-server.go->packetWorker: sendPacket {ID:256 StatusError:{Code:1 msg:EOF lang:}}
+request-server.go->packetWorker: pkt.(type) sshFxpClosePacket
+request-server.go->packetWorker: sendPacket {ID:256 StatusError:{Code:0 msg: lang:}}
