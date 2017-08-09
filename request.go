@@ -250,7 +250,9 @@ func fileinfo(h FileInfoer, r Request) (responsePacket, error) {
 		dirname := filepath.ToSlash(path.Base(r.Filepath))
 		ret := &sshFxpNamePacket{ID: pd.id}
 		for _, fi := range finfo {
-			log.Printf("  => fi: %+v", fi)
+			name := fi.Name()
+			log.Printf("  => fi - name=%s: %+v", name, fi)
+
 			debugFxpNameAttr := sshFxpNameAttr{
 				Name:     fi.Name(),
 				LongName: runLs(dirname, fi),

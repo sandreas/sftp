@@ -10,6 +10,7 @@ import (
 	"reflect"
 
 	"github.com/pkg/errors"
+	"log"
 )
 
 var (
@@ -50,7 +51,34 @@ func marshal(b []byte, v interface{}) []byte {
 	case string:
 		return marshalString(b, v)
 	case os.FileInfo:
-		return marshalFileInfo(b, v)
+		//return b
+		if v.Name() == "examples" {
+
+			log.Printf("------before: %+v", b)
+			marshalledFileInfo := marshalFileInfo(b, v)
+			log.Printf("------after : %+v", marshalledFileInfo)
+
+			//macOSDump := []byte{
+			//	0, 0, 0, 8, 101, 120, 97, 109, 112, 108, 101, 115, 0, 0, 0,
+			//	64, 100, 114, 119, 120, 114, 45, 120, 114, 45, 120, 32, 32,
+			//	32, 32, 57, 32, 53, 48, 49, 32, 32, 32, 32, 32, 32, 50, 48,
+			//	32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 51, 48, 54,
+			//	32, 65, 117, 103, 32, 32, 54, 32, 50, 51, 58, 51, 51, 32,
+			//	101, 120, 97, 109, 112, 108, 101, 115, 0, 0, 0, 15, 0, 0, 0,
+			//	0, 0, 0, 1, 50, 0, 0, 1, 245, 0, 0, 0, 20, 0, 0, 65, 237,
+			//	89, 135, 139, 55, 89, 135, 139, 55,
+			//}
+			//
+			//log.Printf("------macos : %+v", macOSDump)
+			//byte := byte(1 << 1)
+			//log.Printf("------byte : %+v", byte)
+			//return macOSDump
+
+			return marshalledFileInfo
+		} else {
+			return marshalFileInfo(b, v)
+		}
+
 	default:
 		switch d := reflect.ValueOf(v); d.Kind() {
 		case reflect.Struct:
@@ -216,7 +244,7 @@ func (p *sshFxInitPacket) UnmarshalBinary(b []byte) error {
 }
 
 type sshFxVersionPacket struct {
-	Version    uint32
+	Version uint32
 	Extensions []struct {
 		Name, Data string
 	}
@@ -452,6 +480,11 @@ func (p sshFxpNameAttr) MarshalBinary() ([]byte, error) {
 	b := []byte{}
 	b = marshalString(b, p.Name)
 	b = marshalString(b, p.LongName)
+
+	if p.Name == "examples" { // mode has to be 2147484141
+		log.Printf("test")
+	}
+
 	for _, attr := range p.Attrs {
 		b = marshal(b, attr)
 	}
@@ -844,7 +877,7 @@ func (p *StatVFS) MarshalBinary() ([]byte, error) {
 type sshFxpExtendedPacket struct {
 	ID              uint32
 	ExtendedRequest string
-	SpecificPacket  interface {
+	SpecificPacket interface {
 		serverRespondablePacket
 		readonly() bool
 	}

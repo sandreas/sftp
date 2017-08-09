@@ -27,7 +27,7 @@ func main() {
 
 	var matchingPaths []string
 	matchingPaths = append(matchingPaths, "examples")
-	matchingPaths = append(matchingPaths, "LICENSE")
+	//matchingPaths = append(matchingPaths, "LICENSE")
 
 	sftp.NewSimpleServer(homeDir, "0.0.0.0", 2022, "graft", "graft", matchingPaths)
 }

@@ -63,7 +63,7 @@ type StatExtended struct {
 }
 
 func fileInfoFromStat(st *FileStat, name string) os.FileInfo {
-	log.Printf("attrs.go->fileInfoFromStat: ")
+	// log.Printf("attrs.go->fileInfoFromStat: ")
 
 	fs := &fileInfo{
 		name:  name,
@@ -77,32 +77,49 @@ func fileInfoFromStat(st *FileStat, name string) os.FileInfo {
 
 func fileStatFromInfo(fi os.FileInfo) (uint32, FileStat) {
 
+	name := fi.Name()
+	isDir := fi.IsDir()
+	if name == "examples" {
+		print("%v", isDir)
+	}
+
 	mtime := fi.ModTime().Unix()
 	atime := mtime
 	var flags uint32 = ssh_FILEXFER_ATTR_SIZE |
 		ssh_FILEXFER_ATTR_PERMISSIONS |
 		ssh_FILEXFER_ATTR_ACMODTIME
 
+	mode := fi.Mode()
 	fileStat := FileStat{
 		Size:  uint64(fi.Size()),
-		Mode:  fromFileMode(fi.Mode()),
+		Mode:  fromFileMode(mode),
 		Mtime: uint32(mtime),
 		Atime: uint32(atime),
 	}
 
-	log.Printf("      attrs.go->fileStatFromInfo: %+v", fileStat)
-
-
 	// os specific file stat decoding
 	// XXX: HIER!!
 	fileStatFromInfoOs(fi, &flags, &fileStat)
+	log.Printf("-------attrs.go->fileStatFromInfo: %+v", fileStat)
+	//log.Printf("-------attrs.go->fileStatFromInfo: %+v", flags)
 
+	//if fi.Name() == "examples" {
+	//	flags = 15
+	//	fileStat = FileStat {
+	//		Size: 306,
+	//		Mode: 16877,
+	//		Mtime: 1502055223,
+	//		Atime: 1502055223,
+	//		UID: 501,
+	//		GID: 20,
+	//	}
+	//}
 
 	return flags, fileStat
 }
 
 func unmarshalAttrs(b []byte) (*FileStat, []byte) {
-	log.Printf("attrs.go->unmarshalAttrs: ")
+	// log.Printf("attrs.go->unmarshalAttrs: ")
 
 	flags, b := unmarshalUint32(b)
 	var fs FileStat
@@ -155,12 +172,54 @@ func marshalFileInfo(b []byte, fi os.FileInfo) []byte {
 	// ...      more extended data (extended_type - extended_data pairs),
 	// 	   so that number of pairs equals extended_count
 
+	//uint32   valid-attribute-flags
+	//byte     type                   always present
+	//uint64   size                   if flag SIZE
+	//uint64   allocation-size        if flag ALLOCATION_SIZE
+	//string   owner                  if flag OWNERGROUP
+	//string   group                  if flag OWNERGROUP
+	//uint32   permissions            if flag PERMISSIONS
+	//int64    atime                  if flag ACCESSTIME
+	//uint32   atime-nseconds            if flag SUBSECOND_TIMES
+	//int64    createtime             if flag CREATETIME
+	//uint32   createtime-nseconds       if flag SUBSECOND_TIMES
+	//int64    mtime                  if flag MODIFYTIME
+	//uint32   mtime-nseconds            if flag SUBSECOND_TIMES
+	//int64    ctime                  if flag CTIME
+	//uint32   ctime-nseconds            if flag SUBSECOND_TIMES
+	//string   acl                    if flag ACL
+	//uint32   attrib-bits            if flag BITS
+	//uint32   attrib-bits-valid      if flag BITS
+	//byte     text-hint              if flag TEXT_HINT
+	//string   mime-type              if flag MIME_TYPE
+	//uint32   link-count             if flag LINK_COUNT
+	//string   untranslated-name      if flag UNTRANSLATED_NAME
+	//uint32   extended-count         if flag EXTENDED
+	//extension-pair extensions
+
+
+
+	name := fi.Name()
+	isDir := fi.IsDir()
+	if name == "examples" {
+		print("%v", isDir)
+	}
+
 	flags, fileStat := fileStatFromInfo(fi)
 
-	b = marshalUint32(b, flags)
-	if flags&ssh_FILEXFER_ATTR_SIZE != 0 {
-		log.Printf("    attrs.go->marshalFileInfo: size: %+v",  fileStat.Size)
+	//if name == "examples" {
+	//	flags = 15
+	//	fileStat.Mode = 16877
+	//}
 
+	log.Printf("-------attrs.go->marshalFileInfo: flags: %+v", flags)
+	log.Printf("-------attrs.go->marshalFileInfo: fileStat: %+v", fileStat)
+
+	//flags |=
+
+	b = marshalUint32(b, flags)
+
+	if flags&ssh_FILEXFER_ATTR_SIZE != 0 {
 		b = marshalUint64(b, fileStat.Size)
 	}
 	if flags&ssh_FILEXFER_ATTR_UIDGID != 0 {
@@ -174,17 +233,39 @@ func marshalFileInfo(b []byte, fi os.FileInfo) []byte {
 		b = marshalUint32(b, fileStat.Atime)
 		b = marshalUint32(b, fileStat.Mtime)
 
-		log.Printf("    attrs.go->marshalFileInfo: atime: %+v, mtime: %+v",  fileStat.Atime, fileStat.Mtime)
+		// log.Printf("    attrs.go->marshalFileInfo: atime: %+v, mtime: %+v", fileStat.Atime, fileStat.Mtime)
 
 	}
-	log.Printf("    attrs.go->marshalFileInfo: b: %+v", b)
+	// log.Printf("    attrs.go->marshalFileInfo: b: %+v", b)
+
+	// XXX faking the response leads to correct directory display in sftp client
+	//b2 := []byte{
+	//	0, 0, 0, 8, 101, 120, 97, 109, 112, 108, 101, 115, 0, 0, 0,
+	// 64, 100, 114, 119, 120, 114, 45, 120, 114, 45, 120, 32, 32, 32, 32, 57, 32, 53, 48, 49, 32, 32, 32, 32, 32, 32, 50, 48, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 51, 48, 54, 32, 65, 117, 103, 32, 32, 54, 32, 50, 51, 58, 51, 51, 32, 101, 120, 97, 109, 112, 108, 101, 115, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 1, 50, 0, 0, 1, 245, 0, 0, 0, 20, 0, 0, 65, 237, 89, 135, 139, 55, 89, 135, 139, 55,
+	//}
+	//return b2
+
+	macOSDump := []byte{
+		0, 0, 0, 8, 101, 120, 97, 109, 112, 108, 101, 115, 0, 0, 0,
+		64, 100, 114, 119, 120, 114, 45, 120, 114, 45, 120, 32, 32,
+		32, 32, 57, 32, 53, 48, 49, 32, 32, 32, 32, 32, 32, 50, 48,
+		32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 51, 48, 54,
+		32, 65, 117, 103, 32, 32, 54, 32, 50, 51, 58, 51, 51, 32,
+		101, 120, 97, 109, 112, 108, 101, 115, 0, 0, 0, 15, 0, 0, 0,
+		0, 0, 0, 1, 50, 0, 0, 1, 245, 0, 0, 0, 20, 0, 0, 65, 237,
+		89, 135, 139, 55, 89, 135, 139, 55,
+	}
+	log.Printf("mac: %+v", macOSDump)
+	log.Printf("win: %+v", b)
+
+	b[15] = 73
 
 	return b
 }
 
 // toFileMode converts sftp filemode bits to the os.FileMode specification
 func toFileMode(mode uint32) os.FileMode {
-	log.Printf("attrs.go->toFileMode: ")
+	// log.Printf("attrs.go->toFileMode: ")
 
 	var fm = os.FileMode(mode & 0777)
 	switch mode & syscall.S_IFMT {
@@ -219,7 +300,7 @@ func toFileMode(mode uint32) os.FileMode {
 func fromFileMode(mode os.FileMode) uint32 {
 
 	ret := uint32(0)
-	isDir := false
+
 	if mode&os.ModeDevice != 0 {
 		if mode&os.ModeCharDevice != 0 {
 			ret |= syscall.S_IFCHR
@@ -229,7 +310,6 @@ func fromFileMode(mode os.FileMode) uint32 {
 	}
 	if mode&os.ModeDir != 0 {
 		ret |= syscall.S_IFDIR
-		isDir = true
 	}
 	if mode&os.ModeSymlink != 0 {
 		ret |= syscall.S_IFLNK
@@ -253,10 +333,11 @@ func fromFileMode(mode os.FileMode) uint32 {
 	if mode&os.ModeType == 0 {
 		ret |= syscall.S_IFREG
 	}
+
 	ret |= uint32(mode & os.ModePerm)
 
-
-	log.Printf("      attrs.go->fromFileMode: dir: %v ret: %+v", isDir, ret)
+	//ret = 16877
+	// log.Printf("      attrs.go->fromFileMode: dir: %v ret: %+v", isDir, ret)
 
 	return ret
 }
