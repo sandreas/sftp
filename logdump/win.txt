@@ -1,3 +1,8 @@
+name = "examples"
+size = 306
+mode = 2147484141
+
+
 request-server.go->packetWorker: pkt.(type) sshFxInitPacket
 request-server.go->packetWorker: sendPacket {Version:3 Extensions:[]}
 request-server.go->packetWorker: pkt.(type) sshFxpRealpathPacket
