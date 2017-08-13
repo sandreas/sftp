@@ -8,8 +8,8 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-
-	"github.com/sandreas/sftp/examples/sftp-server-simple/sftpd"
+	"github.com/sandreas/sftp/examples/request-server-simple/sftpd"
+	"strings"
 )
 
 // Based on example server code from golang.org/x/crypto/ssh and server_standalone
@@ -20,7 +20,14 @@ func main() {
 		fmt.Printf("Error: %v", err)
 	}
 
+	// default basePath, override with --base-path="..."
 	basePath := "./examples"
+	for _, option := range os.Args {
+		if strings.HasPrefix(option, "--base-path=") {
+			basePath = strings.TrimPrefix(option, "--base-path=")
+		}
+	}
+
 	files := []string{}
 	err = filepath.Walk(basePath, func(path string, f os.FileInfo, err error) error {
 		files = append(files, path)
@@ -38,7 +45,7 @@ func main() {
 	}
 
 	pathMapper := sftpd.NewPathMapper(files, basePath)
-	sftpd.NewSimpleSftpServer(homeDir, "0.0.0.0", 2022, "test", "test", pathMapper)
+	sftpd.NewSimpleRequestServer(homeDir, "0.0.0.0", 2022, "test", "test", pathMapper)
 }
 
 func createHomeDirectoryIfNotExists() (string, error) {

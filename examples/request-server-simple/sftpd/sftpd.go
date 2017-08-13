@@ -17,7 +17,7 @@ import (
 	"github.com/pkg/sftp"
 )
 
-func NewSimpleSftpServer(homePath, listenAddress string, listenPort int, username, password string, pathMapper *PathMapper) {
+func NewSimpleRequestServer(homePath, listenAddress string, listenPort int, username, password string, pathMapper *PathMapper) {
 	config := &ssh.ServerConfig{
 		PasswordCallback: func(c ssh.ConnMetadata, pass []byte) (*ssh.Permissions, error) {
 			log.Printf("Login: %s\n", c.User())
