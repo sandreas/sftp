@@ -14,7 +14,7 @@ import (
 	"io"
 	"crypto/rand"
 	"strconv"
-	"github.com/pkg/sftp"
+	"github.com/sandreas/sftp"
 )
 
 func NewSimpleRequestServer(homePath, listenAddress string, listenPort int, username, password string, pathMapper *PathMapper) {
